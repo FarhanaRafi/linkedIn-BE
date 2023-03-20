@@ -1,0 +1,36 @@
+{
+  "name": "linkedin-be",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon -r dotenv/config -e js ./src/server.js",
+    "start": "node ./src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FarhanaRafi/linkedIn-BE.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FarhanaRafi/linkedIn-BE/issues"
+  },
+  "homepage": "https://github.com/FarhanaRafi/linkedIn-BE#readme",
+  "devDependencies": {
+    "dotenv": "^16.0.3",
+    "nodemon": "^2.0.21"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "mongoose": "^7.0.2",
+    "multer": "^1.4.5-lts.1",
+    "multer-storage-cloudinary": "^4.0.0",
+    "query-to-mongo": "^0.10.2",
+    "request": "^2.88.2"
+  }
+}
