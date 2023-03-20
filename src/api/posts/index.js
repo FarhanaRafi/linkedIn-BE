@@ -28,11 +28,25 @@ postsRouter.post("/", async (req, res, next) => {
 });
 postsRouter.get("/", async (req, res, next) => {
   try {
-    const posts = await PostsModel.find().populate({
-      path: "user",
-      select: "name surname image",
+    const mongoQuery = q2m(req.query);
+    const posts = await PostsModel.find(
+      mongoQuery.criteria,
+      mongoQuery.options.fields
+    )
+      .limit(mongoQuery.options.limit)
+      .skip(mongoQuery.options.skip)
+      .sort(mongoQuery.options.sort)
+      .populate({
+        path: "user",
+        select: "name surname image",
+      });
+    const total = await PostsModel.countDocuments(mongoQuery.criteria);
+    res.send({
+      links: mongoQuery.links(process.env.BE_URL + "/posts", total),
+      total,
+      numberOfPages: Math.ceil(total / mongoQuery.options.limit),
+      posts,
     });
-    res.send(posts);
   } catch (error) {
     next(error);
   }
