@@ -20,8 +20,8 @@ const postUploader = multer({
 postsRouter.post("/", async (req, res, next) => {
   try {
     const newPost = new PostsModel(req.body);
-    const { _id } = await newPost.save();
-    res.status(201).send({ _id });
+    const createdPost = await newPost.save();
+    res.status(201).send(createdPost);
   } catch (error) {
     next(error);
   }
