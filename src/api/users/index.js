@@ -6,6 +6,7 @@ import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import {pipeline} from "stream"
 import {Transform} from "@json2csv/node"
+import { UsersModel } from "../models.js";
 
 const usersRouter = Express.Router();
 
@@ -20,12 +21,17 @@ const expUploader = multer({
 
 usersRouter.post("/", async (req, res, next) => {
   try {
+    const newUser = new UsersModel(req.body);
+    const { _id } = await newUser.save();
+    res.status(201).send({ _id });
   } catch (error) {
     next(error);
   }
 });
 usersRouter.get("/", async (req, res, next) => {
   try {
+    const users = await UsersModel.find();
+    res.send(users);
   } catch (error) {
     next(error);
   }
