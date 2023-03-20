@@ -38,22 +38,75 @@ usersRouter.get("/", async (req, res, next) => {
 });
 usersRouter.get("/:userId", async (req, res, next) => {
   try {
+    const users = await UsersModel.findById(req.params.userId);
+    if (users) {
+      res.send(users);
+    } else {
+      next(createHttpError(404, `User with id ${req.params.userId} not found`));
+    }
   } catch (error) {
     next(error);
   }
 });
 usersRouter.put("/:userId", async (req, res, next) => {
   try {
+    const updatedUser = await UsersModel.findByIdAndUpdate(
+      req.params.userId,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (updatedUser) {
+      res.send(updatedUser);
+    } else {
+      next(createHttpError(404, `User with id ${req.params.userId} not found`));
+    }
   } catch (error) {
     next(error);
   }
 });
 usersRouter.delete("/:userId", async (req, res, next) => {
   try {
+    const deletedUser = await UsersModel.findByIdAndDelete(req.params.userId);
+    if (deletedUser) {
+      res.send(204).send();
+    } else {
+      next(createHttpError(404, `User with id ${req.params.userId} not found`));
+    }
   } catch (error) {
     next(error);
   }
 });
+
+
+const cloudinaryUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "BE-DB/linkedIn",
+    },
+  }),
+}).single("profile");
+
+usersRouter.post(
+  "/:userId/picture",
+  cloudinaryUploader,
+  async (req, res, next) => {
+    try {
+      const user = await UsersModel.findById(req.params.userId);
+      user.image = req.file.path;
+      await user.save();
+      if (user) {
+        res.send({ message: "File uploaded successfully" });
+      } else {
+        next(
+          createHttpError(404, `User with id ${req.params.userId} not found`)
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 // ------------------------------------------------------
 // -------------------- Experiences Part --------------------
@@ -183,5 +236,6 @@ usersRouter.get("/:userId/experiences/csv", async (req, res, next) => {
         next(error)
     }
 })
+
 
 export default usersRouter;
