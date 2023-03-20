@@ -7,6 +7,7 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { pipeline } from "stream";
 import { Transform } from "@json2csv/node";
 import { UsersModel } from "../models.js";
+import { getPDFReadableStream } from "../../lib/tools.js";
 
 const usersRouter = Express.Router();
 
@@ -86,27 +87,36 @@ usersRouter.delete("/:userId", async (req, res, next) => {
   }
 });
 
-
-usersRouter.post(
-  "/:userId/image",
-  userUploader,
-  async (req, res, next) => {
-    try {
-      const user = await UsersModel.findById(req.params.userId);
-      user.image = req.file.path;
-      await user.save();
-      if (user) {
-        res.send({ message: "File uploaded successfully" });
-      } else {
-        next(
-          createHttpError(404, `User with id ${req.params.userId} not found`)
-        );
-      }
-    } catch (error) {
-      next(error);
+usersRouter.post("/:userId/image", userUploader, async (req, res, next) => {
+  try {
+    const user = await UsersModel.findById(req.params.userId);
+    user.image = req.file.path;
+    await user.save();
+    if (user) {
+      res.send({ message: "File uploaded successfully" });
+    } else {
+      next(createHttpError(404, `User with id ${req.params.userId} not found`));
     }
+  } catch (error) {
+    next(error);
   }
-);
+});
+
+usersRouter.get("/:userId/CV", async (req, res, next) => {
+  try {
+    res.setHeader("Content-Disposition", "attachment; filename=CV.pdf");
+    const user = await UsersModel.findById(req.params.userId);
+    const source = await getPDFReadableStream(user);
+    const destination = res;
+    pipeline(source, destination, (err) => {
+      if (err) {
+        console.log(err);
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 // ------------------------------------------------------
 // -------------------- Experiences Part --------------------
@@ -237,13 +247,27 @@ usersRouter.post(
 );
 
 usersRouter.get("/:userId/experiences/csv/download", async (req, res, next) => {
-    try {
-        const user = await UsersModel.findById(req.params.userId)
-        if (user) {
-            res.setHeader("Content-Disposition", `attachment; filename=experiences.csv`)
-            const source = JSON.stringify(user.experiences)
-            const transform = new Transform({fields: ["_id", "role", "company", "startDate", "endDate", "description", "area", "image"]})
-            const destination = res
+  try {
+    const user = await UsersModel.findById(req.params.userId);
+    if (user) {
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=experiences.csv`
+      );
+      const source = JSON.stringify(user.experiences);
+      const transform = new Transform({
+        fields: [
+          "_id",
+          "role",
+          "company",
+          "startDate",
+          "endDate",
+          "description",
+          "area",
+          "image",
+        ],
+      });
+      const destination = res;
 
       pipeline(source, transform, destination, (err) => {
         if (err) console.log(err);
