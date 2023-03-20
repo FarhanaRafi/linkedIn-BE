@@ -235,28 +235,14 @@ usersRouter.post(
   }
 );
 
-usersRouter.get("/:userId/experiences/csv", async (req, res, next) => {
-  try {
-    const user = await UsersModel.findById(req.params.userId);
-    if (user) {
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename=experiences.csv`
-      );
-      const source = user.experiences;
-      const transform = new Transform({
-        fields: [
-          "_id",
-          "role",
-          "company",
-          "startDate",
-          "endDate",
-          "description",
-          "area",
-          "image",
-        ],
-      });
-      const destination = res;
+usersRouter.get("/:userId/experiences/csv/download", async (req, res, next) => {
+    try {
+        const user = await UsersModel.findById(req.params.userId)
+        if (user) {
+            res.setHeader("Content-Disposition", `attachment; filename=experiences.csv`)
+            const source = JSON.stringify(user.experiences)
+            const transform = new Transform({fields: ["_id", "role", "company", "startDate", "endDate", "description", "area", "image"]})
+            const destination = res
 
       pipeline(source, transform, destination, (err) => {
         if (err) console.log(err);
