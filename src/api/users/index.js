@@ -10,6 +10,15 @@ import { UsersModel } from "../models.js";
 
 const usersRouter = Express.Router();
 
+const userUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "bw4_linkedin/users",
+    },
+  }),
+}).single("image");
+
 const expUploader = multer({
   storage: new CloudinaryStorage({
     cloudinary,
@@ -77,18 +86,10 @@ usersRouter.delete("/:userId", async (req, res, next) => {
   }
 });
 
-const cloudinaryUploader = multer({
-  storage: new CloudinaryStorage({
-    cloudinary,
-    params: {
-      folder: "BE-DB/linkedIn",
-    },
-  }),
-}).single("profile");
 
 usersRouter.post(
   "/:userId/image",
-  cloudinaryUploader,
+  userUploader,
   async (req, res, next) => {
     try {
       const user = await UsersModel.findById(req.params.userId);
