@@ -166,12 +166,12 @@ usersRouter.post("/:userId/experiences/:expId/image", expUploader, async (req, r
     }
 })
 
-usersRouter.get("/:userId/experiences/csv", async (req, res, next) => {
+usersRouter.get("/:userId/experiences/csv/download", async (req, res, next) => {
     try {
         const user = await UsersModel.findById(req.params.userId)
         if (user) {
             res.setHeader("Content-Disposition", `attachment; filename=experiences.csv`)
-            const source = user.experiences
+            const source = JSON.stringify(user.experiences)
             const transform = new Transform({fields: ["_id", "role", "company", "startDate", "endDate", "description", "area", "image"]})
             const destination = res
 
