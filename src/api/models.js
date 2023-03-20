@@ -18,7 +18,7 @@ const experienceSchema = new Schema(
 )
 
 
-const usersSchema = new Schema(
+const userSchema = new Schema(
   {
     name: { type: String, required: true },
     surname: { type: String, require: true },
@@ -32,11 +32,11 @@ const usersSchema = new Schema(
         "https://res.cloudinary.com/dgfcfb0rr/image/upload/v1679308763/BE-DB/blogs/t4abipr33ez7pqezobfr.jpg",
       required: true,
     },
-    experience: [],
+    experiences: {default: [], type: [experienceSchema]},
   },
   {
     timestamps: true,
   }
 );
 
-export const UsersModel = model("User", usersSchema);
+export const UsersModel = model("User", userSchema);
