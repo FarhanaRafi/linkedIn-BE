@@ -11,10 +11,11 @@ const usersSchema = new Schema(
     title: { type: String, require: true },
     area: { type: String, require: true },
     image: { type: String },
+    experience: [],
   },
   {
     timestamps: true,
   }
 );
 
-export default model("User", usersSchema);
+export const UsersModel = model("User", usersSchema);
