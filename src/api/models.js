@@ -50,7 +50,7 @@ const postSchema = new Schema({
       "https://res.cloudinary.com/dgfcfb0rr/image/upload/v1679308763/BE-DB/blogs/t4abipr33ez7pqezobfr.jpg",
     required: true,
   },
-  user: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  user: { type: Schema.Types.ObjectId, ref: "User" },
 },
 {
   timestamps: true
