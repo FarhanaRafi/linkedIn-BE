@@ -133,15 +133,16 @@ postsRouter.put("/:postId/like", async (req, res, next) => {
     const post = await PostsModel.findById(req.params.postId);
     if (post) {
       const isLiked = post.likes.includes(req.body._id);
+      let totalLikes = post.likes.length
       if (isLiked) {
-        console.log("is liked")
         post.likes = post.likes.filter((id) => id.toString() !== req.body._id);
+        totalLikes -= 1
       } else {
-        console.log("is not liked")
         post.likes.push(req.body._id);
+        totalLikes += 1
       }
       post.save();
-      res.send({ isLiked: !isLiked });
+      res.send({ isLiked: !isLiked, totalLikes: totalLikes });
     } else {
       next(createHttpError(404, `Post with id ${req.params.postId} not found`));
     }
