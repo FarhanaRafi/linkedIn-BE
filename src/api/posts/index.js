@@ -134,12 +134,14 @@ postsRouter.put("/:postId/like", async (req, res, next) => {
     if (post) {
       const isLiked = post.likes.includes(req.body._id);
       if (isLiked) {
+        console.log("is liked")
         post.likes = post.likes.filter((id) => id.toString() !== req.body._id);
       } else {
+        console.log("is not liked")
         post.likes.push(req.body._id);
       }
       post.save();
-      res.send({ isLiked: isLiked });
+      res.send({ isLiked: !isLiked });
     } else {
       next(createHttpError(404, `Post with id ${req.params.postId} not found`));
     }
