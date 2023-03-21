@@ -52,6 +52,7 @@ const postSchema = new Schema(
       required: true,
     },
     user: { type: Schema.Types.ObjectId, ref: "User" },
+    likes: {default: [], type: [{ type: Schema.Types.ObjectId, ref: "User" }]}
   },
   {
     timestamps: true,
@@ -62,7 +63,6 @@ const commentSchema = new Schema(
   {
     comment: { type: String, required: true },
     user: { type: Schema.Types.ObjectId, ref: "User" },
-    likes: [{ type: Schema.Types.ObjectId, ref: "User" }]
   },
   {
     timestamps: true,
