@@ -51,6 +51,9 @@ const postSchema = new Schema({
     required: true,
   },
   user: [{ type: Schema.Types.ObjectId, ref: "User" }],
+},
+{
+  timestamps: true
 });
 
 export const UsersModel = model("User", userSchema);
