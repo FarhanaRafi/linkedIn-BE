@@ -41,6 +41,15 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
+const commentSchema = new Schema(
+  {
+    comment: { type: String, required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User" },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const postSchema = new Schema(
   {
@@ -52,17 +61,11 @@ const postSchema = new Schema(
       required: true,
     },
     user: { type: Schema.Types.ObjectId, ref: "User" },
-    likes: {default: [], type: [{ type: Schema.Types.ObjectId, ref: "User" }]}
-  },
-  {
-    timestamps: true,
-  }
-);
-
-const commentSchema = new Schema(
-  {
-    comment: { type: String, required: true },
-    user: { type: Schema.Types.ObjectId, ref: "User" },
+    likes: {
+      default: [],
+      type: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    },
+    comments: { default: [], type: [commentSchema] },
   },
   {
     timestamps: true,
@@ -71,4 +74,4 @@ const commentSchema = new Schema(
 
 export const UsersModel = model("User", userSchema);
 export const PostsModel = model("Post", postSchema);
-export const CommentModel = model("Comment", commentSchema);
+// export const CommentModel = model("Comment", commentSchema);

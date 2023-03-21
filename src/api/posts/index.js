@@ -116,36 +116,86 @@ postsRouter.post("/:postId/image", postUploader, async (req, res, next) => {
 // probably not needed, we already see the number of likes when fetching the post itself
 postsRouter.get("/:postId/like", async (req, res, next) => {
   try {
-    const post = await PostsModel.findById(req.params.postId)
+    const post = await PostsModel.findById(req.params.postId);
     if (post) {
-      res.send(post.likes)
+      res.send(post.likes);
     } else {
       next(createHttpError(404, `Post with id ${req.params.postId} not found`));
     }
   } catch (error) {
-    next(error)
+    next(error);
   }
-})
+});
 
 // pass id of user to like the post in body { _id: <id> }
 postsRouter.put("/:postId/like", async (req, res, next) => {
   try {
-    const post = await PostsModel.findById(req.params.postId)
+    const post = await PostsModel.findById(req.params.postId);
     if (post) {
-      const isLiked = post.likes.includes(req.body._id)
+      const isLiked = post.likes.includes(req.body._id);
       if (isLiked) {
-        post.likes = post.likes.filter(id => id.toString() !== req.body._id)
-    } else {
-        post.likes.push(req.body._id)
-    }
-    post.save()
-    res.send({isLiked: isLiked})
+        post.likes = post.likes.filter((id) => id.toString() !== req.body._id);
+      } else {
+        post.likes.push(req.body._id);
+      }
+      post.save();
+      res.send({ isLiked: isLiked });
     } else {
       next(createHttpError(404, `Post with id ${req.params.postId} not found`));
     }
   } catch (error) {
-    next(error)
+    next(error);
   }
-})
+});
+
+postsRouter.post("/:postId/comments", async (req, res, next) => {
+  try {
+    const newComment = req.body;
+    const commentToInsert = {
+      ...newComment,
+      post: req.params.postId,
+    };
+    console.log(commentToInsert);
+
+    const postWithComments = await PostsModel.findByIdAndUpdate(
+      req.params.postId,
+      { $push: { comments: commentToInsert } },
+      { new: true, runValidators: true }
+    );
+    if (postWithComments) {
+      res.send(postWithComments);
+    } else {
+      next(
+        createHttpError(404, `Post with id ${req.params.postId} not found!`)
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+postsRouter.get("/:postId/comments", async (req, res, next) => {
+  try {
+  } catch (error) {
+    next(error);
+  }
+});
+postsRouter.get("/:postId/comments/:commentId", async (req, res, next) => {
+  try {
+  } catch (error) {
+    next(error);
+  }
+});
+postsRouter.put("/:postId/comments/:commentId", async (req, res, next) => {
+  try {
+  } catch (error) {
+    next(error);
+  }
+});
+postsRouter.delete("/:postId/comments/:commentId", async (req, res, next) => {
+  try {
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default postsRouter;
