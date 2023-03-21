@@ -42,20 +42,33 @@ const userSchema = new Schema(
   }
 );
 
-const postSchema = new Schema({
-  text: { type: String, required: true },
-  image: {
-    type: String,
-    default:
-      "https://res.cloudinary.com/dgfcfb0rr/image/upload/v1679308763/BE-DB/blogs/t4abipr33ez7pqezobfr.jpg",
-    required: true,
+const postSchema = new Schema(
+  {
+    text: { type: String, required: true },
+    image: {
+      type: String,
+      default:
+        "https://res.cloudinary.com/dgfcfb0rr/image/upload/v1679308763/BE-DB/blogs/t4abipr33ez7pqezobfr.jpg",
+      required: true,
+    },
+    user: { type: Schema.Types.ObjectId, ref: "User" },
   },
-  user: { type: Schema.Types.ObjectId, ref: "User" },
-  likes: [{ type: Schema.Types.ObjectId, ref: "User" }]
-},
-{
-  timestamps: true
-});
+  {
+    timestamps: true,
+  }
+);
+
+const commentSchema = new Schema(
+  {
+    comment: { type: String, required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User" },
+    likes: [{ type: Schema.Types.ObjectId, ref: "User" }]
+  },
+  {
+    timestamps: true,
+  }
+);
 
 export const UsersModel = model("User", userSchema);
 export const PostsModel = model("Post", postSchema);
+export const CommentModel = model("Comment", commentSchema);
