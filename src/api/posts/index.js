@@ -178,24 +178,91 @@ postsRouter.post("/:postId/comments", async (req, res, next) => {
 });
 postsRouter.get("/:postId/comments", async (req, res, next) => {
   try {
+    const post = await PostsModel.findById(req.params.postId);
+    if (post) {
+      res.send(post.comments);
+    } else {
+      next(
+        createHttpError(404, `Post with id ${req.params.postId} not found!`)
+      );
+    }
   } catch (error) {
     next(error);
   }
 });
 postsRouter.get("/:postId/comments/:commentId", async (req, res, next) => {
   try {
+    const post = await PostsModel.findById(req.params.postId);
+    if (post) {
+      const comment = post.comments.find(
+        (com) => com._id.toString() === req.params.commentId
+      );
+      if (comment) {
+        res.send(comment);
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Comment with id ${req.params.commentId} not found!`
+          )
+        );
+      }
+    } else {
+      next(
+        createHttpError(404, `Post with id ${req.params.postId} not found!`)
+      );
+    }
   } catch (error) {
     next(error);
   }
 });
 postsRouter.put("/:postId/comments/:commentId", async (req, res, next) => {
   try {
+    const post = await PostsModel.findById(req.params.postId);
+    if (post) {
+      const index = post.comments.findIndex(
+        (com) => com._id.toString() === req.params.commentId
+      );
+      if (index !== -1) {
+        post.comments[index] = {
+          ...post.comments[index].toObject(),
+          ...req.body,
+        };
+        await post.save();
+        res.send(post.comments[index]);
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Comment with id ${req.params.commentId} not found!`
+          )
+        );
+      }
+    } else {
+      next(
+        createHttpError(404, `Post with id ${req.params.postId} not found!`)
+      );
+    }
   } catch (error) {
     next(error);
   }
 });
 postsRouter.delete("/:postId/comments/:commentId", async (req, res, next) => {
   try {
+    const post = await PostsModel.findByIdAndUpdate(
+      req.params.postId,
+      {
+        $pull: { comments: { _id: req.params.commentId } },
+      },
+      { new: true, runValidators: true }
+    );
+    if (post) {
+      res.status(204).send();
+    } else {
+      next(
+        createHttpError(404, `Post with id ${req.params.postId} not found!`)
+      );
+    }
   } catch (error) {
     next(error);
   }
