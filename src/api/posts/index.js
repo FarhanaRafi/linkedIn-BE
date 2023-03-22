@@ -39,7 +39,11 @@ postsRouter.get("/", async (req, res, next) => {
       .populate({
         path: "user",
         select: "name surname image",
-      });
+      })
+      .populate({
+        path: "comments.user",
+        select: "name surname image",
+      })
     const total = await PostsModel.countDocuments(mongoQuery.criteria);
     res.send({
       links: mongoQuery.links(process.env.BE_URL + "/posts", total),
@@ -178,7 +182,10 @@ postsRouter.post("/:postId/comments", async (req, res, next) => {
 });
 postsRouter.get("/:postId/comments", async (req, res, next) => {
   try {
-    const post = await PostsModel.findById(req.params.postId);
+    const post = await PostsModel.findById(req.params.postId).populate({
+      path: "comments.user",
+      select: "name surname image",
+    })
     if (post) {
       res.send(post.comments);
     } else {
