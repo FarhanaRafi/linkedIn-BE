@@ -280,4 +280,55 @@ usersRouter.get("/:userId/experiences/csv/download", async (req, res, next) => {
   }
 });
 
+usersRouter.post(
+  "/:senderId/friendRequest/:receiverId",
+  async (req, res, next) => {
+    try {
+      const sender = await UsersModel.findById(req.params.senderId);
+      if (!sender) {
+        next(createHttpError(404, `Sender with id ${req.params.senderId}`));
+      }
+      const receiver = await UsersModel.findById(req.params.receiverId);
+      if (!receiver) {
+        next(createHttpError(404, `Receiver with id ${req.params.receiverId}`));
+      }
+      const isSend = await UsersModel.findOne({
+        friendRequests: { send: req.params.receiverId },
+      });
+      console.log(isSend, "send+++++");
+      if (isSend) {
+        const unSend = await UsersModel.findOneAndUpdate(
+          req.params.senderId,
+          {
+            $pull: { friendRequests: { send: req.params.receiverId } },
+          },
+          { new: true, runValidators: true }
+        );
+        const unPending = await UsersModel.findByIdAndUpdate(
+          req.params.receiverId,
+          { $pull: { friendRequests: { pending: req.params.senderId } } },
+          { new: true, runValidators: true }
+        );
+        res.send({ unSend, unPending });
+      } else {
+        const send = await UsersModel.findOneAndUpdate(
+          req.params.senderId,
+          {
+            $push: { friendRequests: { send: req.params.receiverId } },
+          },
+          { new: true, runValidators: true }
+        );
+        const pending = await UsersModel.findByIdAndUpdate(
+          req.params.receiverId,
+          { $push: { friendRequests: { pending: req.params.senderId } } },
+          { new: true, runValidators: true }
+        );
+        res.send({ send, pending });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export default usersRouter;
