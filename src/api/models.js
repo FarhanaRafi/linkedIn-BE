@@ -21,17 +21,6 @@ const experienceSchema = new Schema(
   }
 );
 
-const friendRequestSchema = new Schema(
-  {
-    send: [{ type: String }],
-    pending: [{ type: String }],
-    friends: [{ type: String }],
-  },
-  {
-    timestamps: true,
-  }
-);
-
 const userSchema = new Schema(
   {
     name: { type: String, required: true },
@@ -47,7 +36,18 @@ const userSchema = new Schema(
       required: true,
     },
     experiences: { default: [], type: [experienceSchema] },
-    friendRequests: { default: [], type: [friendRequestSchema] },
+    friends: {
+      type: [{ type: mongoose.Types.ObjectId, ref: "User" }],
+      default: [],
+    },
+    requestSend: {
+      type: [{ type: mongoose.Types.ObjectId, ref: "User" }],
+      default: [],
+    },
+    requestPending: {
+      type: [{ type: mongoose.Types.ObjectId, ref: "User" }],
+      default: [],
+    },
   },
   {
     timestamps: true,
