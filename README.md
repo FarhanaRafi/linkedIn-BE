@@ -6,3 +6,5 @@ Technologies Used
 * MongoDB 
 * ExpressJS
 * CORS
+
+deployed in cyclic cloud and frontend in vercel
